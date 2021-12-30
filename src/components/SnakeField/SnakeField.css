@@ -1,0 +1,21 @@
+.field {
+  display: flex;
+}
+
+.cell {
+  width: 20px;
+  height: 20px;
+  border: 1px solid gray;
+}
+.snake {
+  background-color: green;
+}
+.food1 {
+  background-color: hotpink;
+}
+.food2 {
+  background-color: indianred;
+}
+.food3 {
+  background-color: indigo;
+}
