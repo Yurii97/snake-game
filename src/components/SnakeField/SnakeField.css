@@ -6,16 +6,24 @@
   width: 20px;
   height: 20px;
   border: 1px solid gray;
+  display: block;
+  background-size: cover;
 }
 .snake {
   background-color: green;
 }
 .food1 {
-  background-color: hotpink;
+  background-image: url(../../images/apple-3155.png);
 }
 .food2 {
-  background-color: indianred;
+  background-image: url(../../images/banana-9625.png);
 }
 .food3 {
-  background-color: indigo;
+  background-image: url(../../images/strawberry-9619.png);
+}
+.form {
+  display: inline-flex;
+  padding: 20px;
+  width: 500px;
+  border: 1px solid black;
 }

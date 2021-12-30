@@ -89,10 +89,6 @@ const SnakeField = () => {
           {FIELD_ROW.map(x => {
             let type = snake.some(e => e[0] === y && e[1] === x) && 'snake';
             if (type !== 'snake') {
-              // if (food.some(e => e[0] === y && e[1] === x)) {
-              //   type = food[2];
-              // }
-              // type = food.some(e => e[0] === y && e[1] === x) && food[2];
               type = food[0] === y && food[1] === x && food[2];
               console.log(food[2]);
             }
