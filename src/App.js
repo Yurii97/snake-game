@@ -1,6 +1,6 @@
 import './App.css';
 import React from 'react';
-import './components/SnakeField/SnakeField.css';
+// import './components/SnakeField/SnakeField.css';
 // import Form from './components/Form/form';
 // import PlayingField from './components/PlayingField/PlayingField';
 // import SnakeField from './components/SnakeField/SnakeField';
@@ -13,7 +13,7 @@ const App = () => {
   const [score, setSkore] = React.useState(0);
   const [name, setName] = React.useState('');
   const [fieldSize, setFieldSize] = React.useState(8);
-  const [isPlay, setIsPlay] = React.useState(false);
+  const [statusGame, setSatusGame] = React.useState('form');
   const [isPause, setIsPause] = React.useState(false);
   const [direction, setDirection] = React.useState(AVALIBLE_MOVES[2]);
   const [snake, setSnake] = React.useState([[1, 1]]);
@@ -22,21 +22,27 @@ const App = () => {
 
   const handleKeyDown = e => {
     AVALIBLE_MOVES.includes(e.code) && setDirection(e.code);
+    console.log(e.code);
     if (e.code === 'Space') {
-      isPause ? setIsPause(false) : setIsPause(true);
+      setIsPause(prevState => !prevState);
     }
+    // console.log('pause:', isPause);
   };
   React.useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
-  });
+  }, []);
 
   React.useEffect(() => {
     const interval = gameLoop();
     return () => clearInterval(interval);
+
+    // return () => clearInterval();
   }, [snake]);
 
-  const submitForm = () => {
-    setIsPlay(true);
+  const submitForm = dat => {
+    console.log(dat);
+    setSatusGame('game');
+    // console.log(name);
   };
 
   const inputName = e => {
@@ -72,7 +78,7 @@ const App = () => {
   };
 
   const gameLoop = () => {
-    const timerId = setTimeout(() => {
+    const timerId = setInterval(() => {
       const newSnake = snake;
       let move = [];
       switch (direction) {
@@ -88,6 +94,8 @@ const App = () => {
         case AVALIBLE_MOVES[3]:
           move = [0, -1];
           break;
+        default:
+          move = [1, 0];
       }
       const headSnake = [
         checkAvalibleSlot(newSnake[newSnake.length - 1][0] + move[0]),
@@ -97,54 +105,72 @@ const App = () => {
       let spliceIndex = 1;
       if (headSnake[0] === food[0] && headSnake[1] === food[1]) {
         spliceIndex = 0;
+        console.log(food);
         generateFood();
       }
+      // for (let i = 0; i < snake.length; i += 1) {
+      // console.dir(snake);
+      // console.dir(snake.slice(0, snake.length - 1).includes(headSnake));
+      // return el[0] === headSnake[0] && el[1] === headSnake[1];
+      // }
+      // if (false) {
+      //   spliceIndex = 0;
+      //   setSatusGame('end');
+      //   console.log('esa');
+      //   return;
+      // }
       setSnake(newSnake.splice(spliceIndex));
     }, SPEED);
     return timerId;
   };
 
   return (
-    <div>
-      {isPlay ? (
+    <>
+      {statusGame === 'game' &&
         FIELD_ROW.map(y => (
           <div key={y} className="field">
             {FIELD_ROW.map(x => {
               let type = snake.some(e => e[0] === y && e[1] === x) && 'snake';
               if (type !== 'snake') {
                 type = food[0] === y && food[1] === x && food[2];
-                console.log(food[2]);
               }
               return <div key={x} className={`cell ${type}`}></div>;
             })}
           </div>
-        ))
-      ) : (
-        <form onSubmit={() => submitForm()} className="form">
-          <label>
-            Name
-            <input
-              type="text"
-              onChange={inputName}
-              value={name}
-              pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-              title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-              required
-            />
-          </label>
-          <label>
-            {' '}
-            select the playing field
-            <select onChange={onSelectFieldSize}>
-              <option value="8">8x8</option>
-              <option value="10">10x10</option>
-              <option value="15">15x15</option>
-            </select>
-          </label>
-          <button type="submit">Start Game</button>
-        </form>
+        ))}
+      {statusGame === 'form' && (
+        <>
+          <form onSubmit={submitForm} className="form">
+            <label>
+              Name
+              <input
+                type="text"
+                onChange={inputName}
+                value={name}
+                pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+                title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+                required
+              />
+            </label>
+            <label>
+              {' '}
+              select the playing field
+              <select onChange={onSelectFieldSize}>
+                <option value="8">8x8</option>
+                <option value="10">10x10</option>
+                <option value="15">15x15</option>
+              </select>
+            </label>
+            <button type="submit">Start Game</button>
+          </form>
+        </>
       )}
-    </div>
+      {statusGame === 'end' && (
+        <div>
+          <ul></ul>
+        </div>
+      )}
+    </>
   );
 };
 
