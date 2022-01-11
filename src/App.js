@@ -1,40 +1,45 @@
 import './App.css';
-import React from 'react';
+import { useState, useEffect } from 'react';
 
 const FOODS = ['food1', 'food2', 'food3'];
 const AVALIBLE_MOVES = ['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft'];
 const SPEED = 500;
 
 const App = () => {
-  const [score, setSkore] = React.useState(0);
-  const [name, setName] = React.useState('');
-  const [fieldSize, setFieldSize] = React.useState(8);
-  const [statusGame, setSatusGame] = React.useState('form');
-  const [isPause, setIsPause] = React.useState(false);
-  const [direction, setDirection] = React.useState(AVALIBLE_MOVES[2]);
-  const [snake, setSnake] = React.useState([[1, 1]]);
-  const [food, setFood] = React.useState([4, 1, 'food1']);
+  const [score, setSkore] = useState(0);
+  const [name, setName] = useState('');
+  const [fieldSize, setFieldSize] = useState(8);
+  const [statusGame, setSatusGame] = useState('form');
+  const [isPause, setIsPause] = useState(false);
+  const [direction, setDirection] = useState(AVALIBLE_MOVES[2]);
+  const [snake, setSnake] = useState([[1, 1]]);
+  const [food, setFood] = useState([4, 1, 'food1']);
   const FIELD_ROW = [...new Array(fieldSize).keys()];
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => clearInterval();
+  }, []);
+
+  useEffect(() => {
+    console.log(isPause);
+    const interval = !isPause && gameLoop();
+    return () => clearInterval(interval);
+  }, [snake, isPause]);
 
   const handleKeyDown = e => {
     AVALIBLE_MOVES.includes(e.code) && setDirection(e.code);
-    console.log(e.code);
     if (e.code === 'Space') {
-      // setIsPause(!isPause);
-      setIsPause(prevState => !prevState);
+      console.log(e.code);
+      toglePause();
     }
   };
-  React.useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
-  }, []);
 
-  React.useEffect(() => {
-    // const interval = !isPause && gameLoop();
-    const interval = gameLoop();
-    return () => clearInterval(interval);
-  }, [snake]);
+  const toglePause = () => {
+    setIsPause(prevState => !prevState);
+  };
 
-  const submitForm = dat => {
+  const submitForm = () => {
     setSatusGame('game');
   };
 
@@ -63,10 +68,10 @@ const App = () => {
         setSkore(skore => skore + 1);
         break;
       case 'food2':
-        setSkore(prevState => prevState + 10);
+        setSkore(skore => skore + 10);
         break;
       case 'food3':
-        setSkore(prevState => prevState + 50);
+        setSkore(skore => skore + 50);
         break;
       default:
     }
@@ -82,6 +87,14 @@ const App = () => {
       ];
     } while (snake.some(el => el[0] === newFood[0] && el[1] === newFood[1]));
     setFood(newFood);
+  };
+
+  const collision = headSnake => {
+    console.log(headSnake);
+    console.log(snake);
+    for (const seg of snake) {
+      if (headSnake[0] === seg[0] && headSnake[1] === seg[1]) return true;
+    }
   };
 
   const gameLoop = () => {
@@ -108,6 +121,12 @@ const App = () => {
         checkAvalibleSlot(newSnake[newSnake.length - 1][0] + move[0]),
         checkAvalibleSlot(newSnake[newSnake.length - 1][1] + move[1]),
       ];
+      if (collision(headSnake, snake)) {
+        toglePause();
+        setTimeout(() => {
+          setSatusGame('end');
+        }, 2000);
+      }
       newSnake.push(headSnake);
       let spliceIndex = 1;
       if (headSnake[0] === food[0] && headSnake[1] === food[1]) {
