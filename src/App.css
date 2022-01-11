@@ -1,10 +1,20 @@
 html {
   margin: 0 auto;
 }
+/* body {
+  margin: 0 auto;
+} */
+
+.gameField {
+  margin: 0 auto;
+  /* display: flex; */
+  justify-content: center;
+  /* flex-direction: column; */
+}
 .field {
   display: flex;
+  /* flex-direction: column; */
 }
-
 .cell {
   width: 20px;
   height: 20px;

@@ -1,9 +1,5 @@
 import './App.css';
 import React from 'react';
-// import './components/SnakeField/SnakeField.css';
-// import Form from './components/Form/form';
-// import PlayingField from './components/PlayingField/PlayingField';
-// import SnakeField from './components/SnakeField/SnakeField';
 
 const FOODS = ['food1', 'food2', 'food3'];
 const AVALIBLE_MOVES = ['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft'];
@@ -24,25 +20,22 @@ const App = () => {
     AVALIBLE_MOVES.includes(e.code) && setDirection(e.code);
     console.log(e.code);
     if (e.code === 'Space') {
+      // setIsPause(!isPause);
       setIsPause(prevState => !prevState);
     }
-    // console.log('pause:', isPause);
   };
   React.useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
   }, []);
 
   React.useEffect(() => {
+    // const interval = !isPause && gameLoop();
     const interval = gameLoop();
     return () => clearInterval(interval);
-
-    // return () => clearInterval();
   }, [snake]);
 
   const submitForm = dat => {
-    console.log(dat);
     setSatusGame('game');
-    // console.log(name);
   };
 
   const inputName = e => {
@@ -51,7 +44,6 @@ const App = () => {
   };
   const onSelectFieldSize = e => {
     const { value } = e.target;
-    console.log(value);
     setFieldSize(Number(value));
   };
   const checkAvalibleSlot = position => {
@@ -62,6 +54,21 @@ const App = () => {
         return fieldSize - 1;
       default:
         return position;
+    }
+  };
+
+  const totalFood = data => {
+    switch (data) {
+      case 'food1':
+        setSkore(skore => skore + 1);
+        break;
+      case 'food2':
+        setSkore(prevState => prevState + 10);
+        break;
+      case 'food3':
+        setSkore(prevState => prevState + 50);
+        break;
+      default:
     }
   };
 
@@ -105,20 +112,9 @@ const App = () => {
       let spliceIndex = 1;
       if (headSnake[0] === food[0] && headSnake[1] === food[1]) {
         spliceIndex = 0;
-        console.log(food);
+        totalFood(food[2]);
         generateFood();
       }
-      // for (let i = 0; i < snake.length; i += 1) {
-      // console.dir(snake);
-      // console.dir(snake.slice(0, snake.length - 1).includes(headSnake));
-      // return el[0] === headSnake[0] && el[1] === headSnake[1];
-      // }
-      // if (false) {
-      //   spliceIndex = 0;
-      //   setSatusGame('end');
-      //   console.log('esa');
-      //   return;
-      // }
       setSnake(newSnake.splice(spliceIndex));
     }, SPEED);
     return timerId;
@@ -126,18 +122,6 @@ const App = () => {
 
   return (
     <>
-      {statusGame === 'game' &&
-        FIELD_ROW.map(y => (
-          <div key={y} className="field">
-            {FIELD_ROW.map(x => {
-              let type = snake.some(e => e[0] === y && e[1] === x) && 'snake';
-              if (type !== 'snake') {
-                type = food[0] === y && food[1] === x && food[2];
-              }
-              return <div key={x} className={`cell ${type}`}></div>;
-            })}
-          </div>
-        ))}
       {statusGame === 'form' && (
         <>
           <form onSubmit={submitForm} className="form">
@@ -165,6 +149,23 @@ const App = () => {
           </form>
         </>
       )}
+      {statusGame === 'game' && (
+        <div className="gameField">
+          <span>Score : {score}</span>
+          {FIELD_ROW.map(y => (
+            <div key={y} className="field">
+              {FIELD_ROW.map(x => {
+                let type = snake.some(e => e[0] === y && e[1] === x) && 'snake';
+                if (type !== 'snake') {
+                  type = food[0] === y && food[1] === x && food[2];
+                }
+                return <div key={x} className={`cell ${type}`}></div>;
+              })}
+            </div>
+          ))}
+        </div>
+      )}
+
       {statusGame === 'end' && (
         <div>
           <ul></ul>
