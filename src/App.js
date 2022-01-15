@@ -35,7 +35,9 @@ const App = () => {
   useEffect(() => {
     const users = localStorage.getItem('users');
     const parseUsers = JSON.parse(users);
-    setListUsers(parseUsers);
+    if (parseUsers) {
+      setListUsers(parseUsers);
+    }
     setSpeed(SPEED - Math.floor(score / 50) * 50);
   }, [name, score]);
 
